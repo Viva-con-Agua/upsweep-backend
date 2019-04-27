@@ -9,10 +9,14 @@ router.get('/', function(req, res, next) {
   });
 });
 
-router.post('/comment', commentController.createComment);
+router.post('/comment', commentController.create);
 
+router.get('/comment', commentController.findAll);
 
-router.delete('/comment/:id', commentController.deleteComment);
+router.get('/comment/:id', commentController.findOne);
 
+router.put('/comment/:id', commentController.update);
+
+router.delete('/comment/:id', commentController.delete);
 
 module.exports = router;
