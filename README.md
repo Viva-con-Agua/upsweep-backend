@@ -1,7 +1,32 @@
-Mongodb and Node needed to run the api.
+# Comment-backend
 
-* npm install --save
+This API is part of the vca-comment widget
 
-* run mongod
 
-* nodemon start
+### Installing
+
+install npm packages
+
+```
+npm install --save
+```
+
+### Running the API
+
+start mongodb
+
+```
+mongod
+```
+run server
+
+```
+nodemon start
+```
+
+### Built With
+
+* [Node]
+* [Mongodb]
+* [Express]
+
