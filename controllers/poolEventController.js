@@ -27,7 +27,7 @@ poolEventController.post = (req, res) => {
 
 poolEventController.getAll = (req, res) => {
     db.PoolEvent.find({}).populate({
-        path: '_creator _comments'
+        path: '_creator _comments _replies'
     })
         .then((pe) => {
             res.status(200).json({

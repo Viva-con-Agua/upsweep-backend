@@ -2,7 +2,7 @@ let db = require('./../models');
 
 const commentController = {};
 
-commentController.post  = (req, res) => {
+commentController.post = (req, res) => {
     // Validate request
     if (!req.body.text) {
         return res.status(400).send({
@@ -13,7 +13,7 @@ commentController.post  = (req, res) => {
     const comment = new db.Comment({
         text: req.body.text,
         _creator: req.body._creator,
-        _poolEvent : req.body._poolEvent
+        _poolEvent: req.body._poolEvent
     });
 
     // Save Note in the database
@@ -21,25 +21,25 @@ commentController.post  = (req, res) => {
         .then(newComment => {
             console.log(newComment);
             db
-            .PoolEvent
-            .findByIdAndUpdate(req.body._poolEvent, {$push : {'_comments' : newComment}})
-                .populate({path : '_comments'})
-                .then((existingPoolEvent)=>{
+                .PoolEvent
+                .findByIdAndUpdate(req.body._poolEvent, { $push: { '_comments': newComment } })
+                .populate({ path: '_comments' })
+                .then((existingPoolEvent) => {
                     res
-                    .status(200)
-                    .json({
-                        success : true,
-                        data : existingPoolEvent
-                    })
+                        .status(200)
+                        .json({
+                            success: true,
+                            data: existingPoolEvent
+                        })
                 })
                 .catch();
 
         }).catch(err => {
             res
-            .status(500)
-            .send({
-                message: err.message || "Some error occurred while creating the Comment."
-            });
+                .status(500)
+                .send({
+                    message: err.message || "Some error occurred while creating the Comment."
+                });
         });
 };
 

@@ -4,6 +4,10 @@ var router = express.Router();
 let commentController = require('../controllers/commentController');
 let poolEventController = require('../controllers/poolEventController');
 let userController = require('../controllers/userController');
+let replyController = require('../controllers/replyController');
+let voteController = require('../controllers/voteController');
+
+
 
 
 /* GET home page. */
@@ -23,13 +27,16 @@ router.put('/comment/:id', commentController.update);
 
 router.delete('/comment/:id', commentController.delete);
 
-
-
 router.post('/poolevent', poolEventController.post);
 
 router.get('/poolEvents', poolEventController.getAll);
 
 router.post('/user', userController.post);
+
+router.post('/reply', replyController.post);
+
+router.post('/vote', voteController.post);
+
 
 
 
