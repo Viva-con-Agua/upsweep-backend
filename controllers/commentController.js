@@ -1,6 +1,8 @@
-let Comment = require('../model/comment');
+let db = require('./../models');
 
-exports.create = (req, res) => {
+const commentController = {};
+
+commentController.post  = (req, res) => {
     // Validate request
     if (!req.body.text) {
         return res.status(400).send({
@@ -8,24 +10,42 @@ exports.create = (req, res) => {
         });
     };
     // Create a Note
-    const comment = new Comment({
-        text: req.body.text || "Untitled Comment",
+    const comment = new db.Comment({
+        text: req.body.text,
+        _creator: req.body._creator,
+        _poolEvent : req.body._poolEvent
     });
 
     // Save Note in the database
     comment.save()
-        .then(data => {
-            res.send(data);
+        .then(newComment => {
+            console.log(newComment);
+            db
+            .PoolEvent
+            .findByIdAndUpdate(req.body._poolEvent, {$push : {'_comments' : newComment}})
+                .populate({path : '_comments'})
+                .then((existingPoolEvent)=>{
+                    res
+                    .status(200)
+                    .json({
+                        success : true,
+                        data : existingPoolEvent
+                    })
+                })
+                .catch();
+
         }).catch(err => {
-            res.status(500).send({
-                message: err.message || "Some error occurred while creating the Note."
+            res
+            .status(500)
+            .send({
+                message: err.message || "Some error occurred while creating the Comment."
             });
         });
 };
 
 // Retrieve and return all notes from the database.
-exports.findAll = (req, res) => {
-    Comment.find()
+commentController.findAll = (req, res) => {
+    db.Comment.find()
         .then(comments => {
             res.send(comments);
         }).catch(err => {
@@ -36,8 +56,8 @@ exports.findAll = (req, res) => {
 }
 
 // Find a single note with a noteId
-exports.findOne = (req, res) => {
-    Comment.findById(req.params.id)
+commentController.findOne = (req, res) => {
+    db.Comment.findById(req.params.id)
         .then(comment => {
             if (!comment) {
                 return res.status(404).send({
@@ -58,7 +78,7 @@ exports.findOne = (req, res) => {
 };
 
 // Update a note identified by the noteId in the request
-exports.update = (req, res) => {
+commentController.update = (req, res) => {
     if (!req.body.text) {
         return res.status(400).send({
             message: "Note content can not be empty"
@@ -66,7 +86,7 @@ exports.update = (req, res) => {
     }
 
     // Find note and update it with the request body
-    Comment.findByIdAndUpdate(req.params.id, {
+    db.Comment.findByIdAndUpdate(req.params.id, {
         text: req.body.text || "Untitled Note"
     }, { new: true })
         .then(comment => {
@@ -89,8 +109,8 @@ exports.update = (req, res) => {
 };
 
 // Delete a note with the specified noteId in the request
-exports.delete = (req, res) => {
-    Comment.findByIdAndRemove(req.params.id)
+commentController.delete = (req, res) => {
+    db.Comment.findByIdAndRemove(req.params.id)
         .then(note => {
             if (!note) {
                 return res.status(404).send({
@@ -109,3 +129,5 @@ exports.delete = (req, res) => {
             });
         });
 };
+
+module.exports = commentController
