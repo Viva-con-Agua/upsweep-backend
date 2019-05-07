@@ -6,6 +6,8 @@ let poolEventController = require('../controllers/poolEventController');
 let userController = require('../controllers/userController');
 let replyController = require('../controllers/replyController');
 let voteController = require('../controllers/voteController');
+let authController = require('../controllers/authController');
+
 
 
 
@@ -36,6 +38,9 @@ router.post('/user', userController.post);
 router.post('/reply', replyController.post);
 
 router.post('/vote', voteController.post);
+
+router.get('/oauth/code/', authController.getCode);
+
 
 
 
