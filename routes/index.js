@@ -8,22 +8,18 @@ let replyController = require('../controllers/replyController');
 let voteController = require('../controllers/voteController');
 let authController = require('../controllers/authController');
 
-
-
-
-
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.send({
+  res.status(200).json({
     message : "welcome to comment-api"
   });
 });
 
 router.post('/comment', commentController.post);
 
-router.get('/comment', commentController.findAll);
+//router.get('/comment', commentController.findAll);
 
-router.get('/comment/:id', commentController.findOne);
+//router.get('/comment/:id', commentController.findOne);
 
 router.put('/comment/:id', commentController.update);
 
@@ -41,9 +37,10 @@ router.post('/vote', voteController.post);
 
 router.get('/oauth/code/', authController.getCode);
 
+router.get('/oauth', authController.authenticate);
 
+router.get('/comment', commentController.getCommentsByPoolEventId_auth);
 
-
-
+router.get('/comment/:poolEvent', commentController.getCommentsByPoolEventId);
 
 module.exports = router;

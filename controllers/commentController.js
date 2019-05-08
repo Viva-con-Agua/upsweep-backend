@@ -1,5 +1,7 @@
 let db = require('./../models');
-
+let authService = require('./../services/authservise');
+let access = {};
+let authController = require('./authController');
 const commentController = {};
 
 commentController.post = (req, res) => {
@@ -9,17 +11,17 @@ commentController.post = (req, res) => {
             message: "Note content can not be empty"
         });
     };
+    console.log(global.profile);
     // Create a Note
     const comment = new db.Comment({
         text: req.body.text,
-        _creator: req.body._creator,
+        _creator: global.profile.id,
         _poolEvent: req.body._poolEvent
     });
 
     // Save Note in the database
     comment.save()
         .then(newComment => {
-            console.log(newComment);
             db
                 .PoolEvent
                 .findByIdAndUpdate(req.body._poolEvent, { $push: { '_comments': newComment } })
@@ -129,5 +131,26 @@ commentController.delete = (req, res) => {
             });
         });
 };
+
+commentController.getCommentsByPoolEventId_auth = (req, res) => {
+    authService.authenticate(req, res, req.query.poolEventId);
+    res.end();
+}
+
+commentController.getCommentsByPoolEventId = (req, res) => {
+    db.Comment.find({ _poolEvent: req.params.poolEvent })
+        .then((resp) => {
+            res
+                .status(200)
+                .json({ data: resp })
+        })
+        .catch((err) => {
+            res
+                .status(500)
+                .json({
+                    message: err.message
+                });
+        });
+}
 
 module.exports = commentController

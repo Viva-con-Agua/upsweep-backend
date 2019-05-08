@@ -1,0 +1,5 @@
+{
+    "oauth": {
+        "code_url" : "http://localhost/drops/oauth2/code/get?client_id=test&response_type=code&state=helloWorld&redirect_uri=http://localhost/api/oauth/code"
+    }
+}
