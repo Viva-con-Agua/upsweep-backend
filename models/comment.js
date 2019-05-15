@@ -7,10 +7,13 @@ var Comment = new Schema({
     type: Date,
     default: Date.now
   },
-  _creator: { type: String, required:true },
-  _poolEvent: { type: Schema.ObjectId, ref: 'PoolEvent', required:true },
-  _replies : [{type:Schema.ObjectId , ref : 'Reply'}],
-  _votes : [{type: Schema.ObjectId, ref : 'Vote'}]
+  _creator: {
+    id: { type: String, required: true },
+    fullName: { type: String, required: false , default : 'anonymous' }
+  },
+  _poolEvent: { type: Schema.ObjectId, ref: 'PoolEvent', required: true },
+  _replies: [{ type: Schema.ObjectId, ref: 'Reply' }],
+  _votes: [{ type: Schema.ObjectId, ref: 'Vote' }]
 });
 
 var Comment = mongoose.model('Comment', Comment);

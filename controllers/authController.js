@@ -1,6 +1,7 @@
 let axios = require('axios');
 let authservice = require('./../services/authservise');
 const authController = {};
+const queryString = require('query-string')
 
 authController.getCode = (req, res) => {
     let code = req.query.code;
@@ -11,12 +12,19 @@ authController.getCode = (req, res) => {
                 message: "code parameter is missing"
             })
     } else {
-        axios.get('http://localhost/drops/oauth2/access_token?grant_type=authorization_code&client_id=test&code='
-            + code + '&redirect_uri=http://localhost/api/oauth/code')
+        axios.get('http://localhost/drops/oauth2/access_token?' +
+            queryString.stringify({
+                grant_type: 'authorization_code',
+                client_id: 'comment-backend',
+                code: code,
+                redirect_uri: 'http://localhost/api/oauth/code'
+            })
+        )
             .then((resp) => {
                 authservice.getProfile(resp.data.access_token, (profile) => {
                     console.log(profile);
                     global.profile = profile;
+                    global.access_token = resp.data.access_token
                     res.redirect(req.query.state);
                 });
             })
@@ -31,7 +39,15 @@ authController.getCode = (req, res) => {
 }
 
 authController.authenticate = (req, res) => {
-    res.redirect('http://localhost/drops/oauth2/code/get?client_id=test&response_type=code&state=http://localhost/api&redirect_uri=http://localhost/api/oauth/code');
+    res.redirect('http://localhost/drops/oauth2/code/get?' +
+        queryString.stringify({
+            client_id: 'comment-backend',
+            response_type: 'code',
+            state: 'http://localhost:4000/comment/' + req.query.poolEventId,
+            redirect_uri: 'http://localhost/api/oauth/code'
+        })
+    )
 }
 
-module.exports =  authController;
+module.exports = authController;
+

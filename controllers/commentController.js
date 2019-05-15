@@ -11,11 +11,11 @@ commentController.post = (req, res) => {
             message: "Note content can not be empty"
         });
     };
-    console.log(global.profile);
+    console.log(req.body);
     // Create a Note
     const comment = new db.Comment({
         text: req.body.text,
-        _creator: global.profile.id,
+        _creator: req.body._creator,
         _poolEvent: req.body._poolEvent
     });
 
@@ -140,9 +140,23 @@ commentController.getCommentsByPoolEventId_auth = (req, res) => {
 commentController.getCommentsByPoolEventId = (req, res) => {
     db.Comment.find({ _poolEvent: req.params.poolEvent })
         .then((resp) => {
-            res
-                .status(200)
-                .json({ data: resp })
+            let profile = global.profile
+            if (global.profile) {
+                res
+                    .status(200)
+                    .json({
+                        data: {
+                            resp,
+                            profile
+                        }
+                    })
+            } else {
+                res
+                    .status(500)
+                    .json({
+                        message: 'user is not authenticated'
+                    })
+            }
         })
         .catch((err) => {
             res
