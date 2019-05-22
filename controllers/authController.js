@@ -2,6 +2,7 @@ let axios = require('axios');
 let authservice = require('./../services/authservise');
 const authController = {};
 const queryString = require('query-string')
+const passport = require('passport');
 
 authController.getCode = (req, res) => {
     let code = req.query.code;
@@ -22,10 +23,12 @@ authController.getCode = (req, res) => {
         )
             .then((resp) => {
                 authservice.getProfile(resp.data.access_token, (profile) => {
-                    console.log(profile);
                     global.profile = profile;
                     global.access_token = resp.data.access_token
-                    res.redirect(req.query.state);
+                    req.login(profile, function (err) {
+                        if (err) throw err;
+                        res.redirect(req.query.state);
+                    });
                 });
             })
             .catch((err) => {
@@ -38,16 +41,14 @@ authController.getCode = (req, res) => {
     }
 }
 
-authController.authenticate = (req, res) => {
-    res.redirect('http://localhost/drops/oauth2/code/get?' +
-        queryString.stringify({
-            client_id: 'comment-backend',
-            response_type: 'code',
-            state: 'http://localhost:4000/comment/' + req.query.poolEventId,
-            redirect_uri: 'http://localhost/api/oauth/code'
-        })
-    )
-}
+passport.serializeUser(function (profile, done) {
+    done(null, profile);
+});
+
+passport.deserializeUser(function (profile, done) {
+    done(null, profile);
+});
+
 
 module.exports = authController;
 

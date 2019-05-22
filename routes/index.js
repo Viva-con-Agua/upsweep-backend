@@ -15,19 +15,17 @@ router.get('/', function(req, res, next) {
   });
 });
 
+router.get('/poolEvents', poolEventController.getAll);
+
+router.get('/oauth/code/', authController.getCode);
+
+router.get('/comment/:poolEvent', commentController.getCommentsByPoolEventId);
+
+router.get('/currentsession', commentController.currentSession);
+
 router.post('/comment', commentController.post);
 
-//router.get('/comment', commentController.findAll);
-
-//router.get('/comment/:id', commentController.findOne);
-
-router.put('/comment/:id', commentController.update);
-
-router.delete('/comment/:id', commentController.delete);
-
 router.post('/poolevent', poolEventController.post);
-
-router.get('/poolEvents', poolEventController.getAll);
 
 router.post('/user', userController.post);
 
@@ -35,12 +33,12 @@ router.post('/reply', replyController.post);
 
 router.post('/vote', voteController.post);
 
-router.get('/oauth/code/', authController.getCode);
+router.put('/comment/:id', commentController.update);
 
-router.get('/oauth', authController.authenticate);
+router.delete('/comment/:id', commentController.delete);
 
-router.get('/comment', commentController.getCommentsByPoolEventId_auth);
+//router.get('/comment', commentController.findAll);
 
-router.get('/comment/:poolEvent', commentController.getCommentsByPoolEventId);
+//router.get('/comment/:id', commentController.findOne);
 
 module.exports = router;

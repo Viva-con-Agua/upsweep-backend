@@ -37,5 +37,4 @@ voteController.post = (req, res) => {
         });
 }
 
-
 module.exports = voteController;

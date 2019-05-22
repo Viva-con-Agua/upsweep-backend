@@ -4,6 +4,9 @@ let access = {};
 let authController = require('./authController');
 const commentController = {};
 
+let passport = require('passport');
+
+
 commentController.post = (req, res) => {
     // Validate request
     if (!req.body.text) {
@@ -132,18 +135,13 @@ commentController.delete = (req, res) => {
         });
 };
 
-commentController.getCommentsByPoolEventId_auth = (req, res) => {
-    authService.authenticate(req, res, req.query.poolEventId);
-    res.end();
-}
 
 commentController.getCommentsByPoolEventId = (req, res) => {
     db.Comment.find({ _poolEvent: req.params.poolEvent })
         .then((resp) => {
-            let profile = global.profile
-            if (global.profile) {
-                res
-                    .status(200)
+            //if (global.profile) {
+            if (req.isAuthenticated()) {
+                res.status(200)
                     .json({
                         data: {
                             resp,
@@ -167,4 +165,11 @@ commentController.getCommentsByPoolEventId = (req, res) => {
         });
 }
 
-module.exports = commentController
+commentController.currentSession = (req, res) => {
+    res.json({
+        isAuthenticated: req.isAuthenticated(),
+        profile: req.user
+    });
+}
+
+module.exports = commentController;
