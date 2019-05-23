@@ -27,13 +27,14 @@ authController.getCode = (req, res) => {
                     global.access_token = resp.data.access_token
                     req.login(profile, function (err) {
                         if (err) throw err;
-                        res.redirect(req.query.state);
+                        console.log(req.isAuthenticated());
+                            res.redirect(req.query.state);
+                        //res.redirect('http://google.com');
                     });
                 });
             })
             .catch((err) => {
-                res
-                    .status(500)
+                res.status(500)
                     .json({
                         message: err.message
                     });

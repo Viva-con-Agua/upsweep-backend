@@ -7,6 +7,8 @@ var logger = require('morgan');
 const cors = require('cors')
 const session = require('express-session');
 const passport = require('passport');
+const proxy = require('http-proxy-middleware');
+
 
 
 var indexRouter = require('./routes/index');
@@ -15,7 +17,7 @@ const randomString = require('randomstring');
 
 var app = express();
 
-;
+
 
 app.use(cors({ origin: ["http://localhost:4000" , "http://localhost/api"] , credentials: true }));
 
@@ -49,12 +51,20 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+/**app.use(
+  '/api',
+  proxy({ target: 'http://localhost:2222', changeOrigin: true })
+);**/
+
 app.use(
   session({
+    path : '/',
+    domain : 'http://localhost:4000',
     secret: 'password',
     resave: false,
     saveUninitialized: false,
-    store: store
+    store: store,
+    maxAge: 24 * 60 * 60 * 1000 
   }));
 
 app.use(passport.initialize());

@@ -48,14 +48,14 @@ commentController.post = (req, res) => {
         });
 };
 
-// Retrieve and return all notes from the database.
+// Retrieve and return all comment from the database.
 commentController.findAll = (req, res) => {
     db.Comment.find()
         .then(comments => {
             res.send(comments);
         }).catch(err => {
             res.status(500).send({
-                message: err.message || "Some error occurred while retrieving notes."
+                message: err.message || "Some error occurred while retrieving comment."
             });
         });
 }
@@ -137,15 +137,17 @@ commentController.delete = (req, res) => {
 
 
 commentController.getCommentsByPoolEventId = (req, res) => {
+    console.log(req.isAuthenticated());
+    console.log(req.session);
+
     db.Comment.find({ _poolEvent: req.params.poolEvent })
-        .then((resp) => {
+        .then((comments) => {
             //if (global.profile) {
             if (req.isAuthenticated()) {
                 res.status(200)
                     .json({
                         data: {
-                            resp,
-                            profile
+                            comments
                         }
                     })
             } else {
@@ -168,8 +170,11 @@ commentController.getCommentsByPoolEventId = (req, res) => {
 commentController.currentSession = (req, res) => {
     res.json({
         isAuthenticated: req.isAuthenticated(),
-        profile: req.user
+        profile: req.session.passport.user
     });
 }
+
+
+
 
 module.exports = commentController;
