@@ -37,6 +37,8 @@ router.put('/comment/:id', commentController.update);
 
 router.delete('/comment/:id', commentController.delete);
 
+router.delete('/vote/:voteId', voteController.delete);
+
 //router.get('/comment', commentController.findAll);
 
 //router.get('/comment/:id', commentController.findOne);
