@@ -7,19 +7,25 @@ var logger = require('morgan');
 const cors = require('cors')
 const session = require('express-session');
 const passport = require('passport');
-const proxy = require('http-proxy-middleware');
-
-
+const hbs = require('express-handlebars');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-const randomString = require('randomstring');
 
 var app = express();
 
+app.engine('hbs', hbs({extname : 'hbs' , defaultLayout: 'layout' , layoutsDir : __dirname + '/views/layouts/'}));
+app.set('views' , path.join(__dirname , 'views'))
+app.set('view engine' ,'hbs')
 
 
-app.use(cors({ origin: ["http://localhost:4000" , "http://localhost/api"] , credentials: true }));
+
+app.use(cors({
+  origin: ["http://localhost:4000",
+    "http://localhost/api",
+    'http://localhost:8080',
+    'http://localhost:8081'],
+  credentials: true
+}));
 
 //database
 var mongoose = require('mongoose');
@@ -30,8 +36,6 @@ var store = new MongoDBStore({
 });
 
 mongoose.connect('mongodb://localhost:27017/commenthub', { useNewUrlParser: true });
-
-//mongoose.connect('mongodb://bellafkb:pool2comment@ds157256.mlab.com:57256/commenthub' ,  { useNewUrlParser: true });
 
 var db = mongoose.connection;
 
@@ -51,20 +55,15 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-/**app.use(
-  '/api',
-  proxy({ target: 'http://localhost:2222', changeOrigin: true })
-);**/
-
 app.use(
   session({
-    path : '/',
-    domain : 'http://localhost:4000',
+    path: '/',
+    domain: 'http://localhost:4000',
     secret: 'password',
     resave: false,
     saveUninitialized: false,
     store: store,
-    maxAge: 24 * 60 * 60 * 1000 
+    maxAge: 24 * 60 * 60 * 1000
   }));
 
 app.use(passport.initialize());
@@ -78,7 +77,7 @@ app.all('/*', function (req, res, next) {
 // view engine setup
 
 //Access-Control-Allow-Origin
-app.use(function (req, res, next) {
+/*app.use(function (req, res, next) {
   res.header('Access-Control-Allow-Credentials', true);
   res.header('Access-Control-Allow-Origin', req.headers.origin);
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
@@ -88,6 +87,25 @@ app.use(function (req, res, next) {
   } else {
     next();
   }
+});*/
+
+app.use(function (req, res, next) {
+
+  // Website you wish to allow to connect
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080');
+
+  // Request methods you wish to allow
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+
+  // Request headers you wish to allow
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+
+  // Set to true if you need the website to include cookies in the requests sent
+  // to the API (e.g. in case you use sessions)
+  res.setHeader('Access-Control-Allow-Credentials', true);
+
+  // Pass to next layer of middleware
+  next();
 });
 
 app.use('/api', indexRouter);

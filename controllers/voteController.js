@@ -38,8 +38,7 @@ voteController.post = (req, res) => {
         });
 }
 
-
-//todo: delete vote
+//delete vote
 voteController.delete = (req, res) => {
     db.Vote.remove({ _id: req.params.voteId })
         .then((resp) => {

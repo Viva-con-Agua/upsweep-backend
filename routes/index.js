@@ -9,9 +9,9 @@ let voteController = require('../controllers/voteController');
 let authController = require('../controllers/authController');
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
   res.status(200).json({
-    message : "welcome to comment-api"
+    message: "welcome to comment-api"
   });
 });
 
@@ -39,8 +39,13 @@ router.delete('/comment/:id', commentController.delete);
 
 router.delete('/vote/:voteId', voteController.delete);
 
-//router.get('/comment', commentController.findAll);
+router.get('/oauth/:id', commentController.oauth);
 
-//router.get('/comment/:id', commentController.findOne);
+router.get('/rendersession', (req,res) => {
+  res.render('index', { title: req.session, condition: false  });
+});
+
+
+
 
 module.exports = router;

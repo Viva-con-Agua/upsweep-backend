@@ -3,12 +3,13 @@ let authService = require('./../services/authservise');
 let access = {};
 let authController = require('./authController');
 const commentController = {};
+const queryString = require('query-string');
 
 let passport = require('passport');
 
 
 commentController.post = (req, res) => {
-    if (req.isAuthenticated()) {
+    if (true) {
         // Validate request
         if (!req.body.text) {
             return res.status(400).send({
@@ -139,13 +140,14 @@ commentController.delete = (req, res) => {
         });
 };
 
-
 commentController.getCommentsByPoolEventId = (req, res) => {
     db.Comment.find({ _poolEvent: req.params.poolEvent }).populate({path : '_votes'})
     .sort( { 'createdAt': -1 } )
         .then((comments) => {
             //if (global.profile) {
             if (req.isAuthenticated()) {
+            //    if (true) {
+            
                 res.status(200)
                     .json({
                         success: true,
@@ -171,13 +173,28 @@ commentController.getCommentsByPoolEventId = (req, res) => {
 }
 
 commentController.currentSession = (req, res) => {
-    res.json({
-        isAuthenticated: req.isAuthenticated(),
-        profile: req.session.passport.user
-    });
+    if(req.isAuthenticated()){
+        res.json({
+            isAuthenticated: req.isAuthenticated(),
+            profile: req.session.passport.user
+        });
+    }else{
+        res.status(500).json({
+            isAuthenticated: false
+        });
+    }
+    
 }
 
+commentController.oauth = (req , res)=>{
+    res.redirect("http://localhost/drops/oauth2/code/get?" +
+    queryString.stringify({
+      client_id: "comment-backend",
+      response_type: "code",
+      state: "http://localhost:4000/upsweep/comment/" + req.params.id,
+      redirect_uri: "http://localhost/api/oauth/code"
+    }));
 
-
+}
 
 module.exports = commentController;
