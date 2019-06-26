@@ -31,11 +31,11 @@ app.use(cors({
 var mongoose = require('mongoose');
 var MongoDBStore = require('connect-mongodb-session')(session);
 var store = new MongoDBStore({
-  uri: 'mongodb://localhost:27017/connect_mongodb_session',
+  uri: 'mongodb://172.2.200.8:27017/connect_mongodb_session',
   collection: 'mySessions'
 });
 
-mongoose.connect('mongodb://localhost:27017/commenthub', { useNewUrlParser: true });
+mongoose.connect('mongodb://172.2.200.8:27017/commenthub', { useNewUrlParser: true });
 
 var db = mongoose.connection;
 
@@ -69,8 +69,12 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.all('/*', function (req, res, next) {
+app.all('/backend/upsweep/*', function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
+//http://localhost/emotobackend/subpath
+  req.url = req.url.replace(/^\/backend\/upsweep\//, '/');
+  //http://localhost/emotobackend
+  req.url = req.url.replace(/^\/emotobackend\/upsweep/, '/');
   next();
 });
 
